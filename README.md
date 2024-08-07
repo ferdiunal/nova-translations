@@ -146,4 +146,4 @@ For support, please open an issue in the GitHub repository.
 
 ## Licence 
 
-This project is open-sourced software licensed under the [MIT license](LICENCE).
+This project is open-sourced software licensed under the [MIT license](LICENSE).
