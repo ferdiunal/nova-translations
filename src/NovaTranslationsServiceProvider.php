@@ -62,7 +62,7 @@ class NovaTranslationsServiceProvider extends ServiceProvider
                 $resource,
             ]);
 
-            $resource::$translations = Translation::getTranslationsForGroup(
+            Nova::$translations = Translation::getTranslationsForGroup(
                 $this->app->getLocale(),
                 '*'
             );
