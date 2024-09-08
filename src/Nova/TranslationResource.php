@@ -2,12 +2,12 @@
 
 namespace Ferdiunal\NovaTranslations\Nova;
 
+use App\Nova\Resource;
 use Ferdiunal\NovaTranslations\Models\Translation;
 use Ferdiunal\NovaTranslations\TranslationField;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Resource;
 
 class TranslationResource extends Resource
 {
@@ -21,7 +21,11 @@ class TranslationResource extends Resource
     public static $displayInNavigation = false;
 
     public static $search = [
-        'namespace', 'group', 'key', 'text', 'meta',
+        'namespace',
+        'group',
+        'key',
+        'text',
+        'meta',
     ];
 
     public function fields(NovaRequest $request)
@@ -46,6 +50,6 @@ class TranslationResource extends Resource
     {
         $table = app(static::$model)->getTable();
 
-        return $query->reorder()->orderBy($table . '.namespace', 'asc')->orderBy($table . '.group', 'asc')->orderBy($table . '.key', 'asc');
+        return $query->reorder()->orderBy($table.'.namespace', 'asc')->orderBy($table.'.group', 'asc')->orderBy($table.'.key', 'asc');
     }
 }

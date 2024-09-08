@@ -66,8 +66,8 @@ final class SaveScan
 
         $model = app(config('nova-translations.model'));
 
-        if (!is_a($model, Translation::class, true)) {
-            throw new \Exception('Model must be an instance of ' . Translation::class);
+        if (! is_a($model, Translation::class, true)) {
+            throw new \Exception('Model must be an instance of '.Translation::class);
         }
 
         foreach ($locals as $locale) {
@@ -102,12 +102,12 @@ final class SaveScan
         }
 
         $isTranslatable = (str($trans)->contains('::') || str($trans)->contains('_') ||
-            (!str($trans)->contains('::') &&
-                !str($trans)->endsWith('.') &&
+            (! str($trans)->contains('::') &&
+                ! str($trans)->endsWith('.') &&
                 str($trans)->contains('.')));
 
         if ($this->defaultLocale !== $locale) {
-            if ($this->translater instanceof Translator && !$isTranslatable) {
+            if ($this->translater instanceof Translator && ! $isTranslatable) {
                 $trans = $this->translater->run(
                     source: $this->defaultLocale,
                     target: $locale,

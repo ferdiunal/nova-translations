@@ -21,7 +21,7 @@ return [
     'patternA' => implode('', [
         '[^\w]', // Must not start with any alphanum or _
         '(?<!->)', // Must not start with ->
-        '(' . implode('|', [
+        '('.implode('|', [
             'trans',
             'trans_choice',
             'Lang::get',

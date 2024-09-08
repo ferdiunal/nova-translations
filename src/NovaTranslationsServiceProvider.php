@@ -21,52 +21,122 @@ class NovaTranslationsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $resource = $this->app['config']->get('nova-translations.resource', TranslationResource::class);
+        $this->registerConfig();
+        $this->registerResources();
+        $this->registerMigrations();
+        $this->registerCommands();
 
-        if (!$this->app->configurationIsCached()) {
-            $this->mergeConfigFrom(__DIR__ . '/../config/nova-translations.php', 'nova-translations');
+        Nova::serving(function (ServingNova $event) {
+            $this->registerNovaResources();
+            $this->loadNovaTranslations();
+        });
+    }
+
+    /**
+     * Register package configuration.
+     *
+     * @return void
+     */
+    protected function registerConfig()
+    {
+        if (! $this->app->configurationIsCached()) {
+            $this->mergeConfigFrom(__DIR__.'/../config/nova-translations.php', 'nova-translations');
         }
+    }
 
+    /**
+     * Register Nova resources.
+     *
+     * @return void
+     */
+    protected function registerResources()
+    {
+        $resource = $this->getConfiguredResource();
+        $this->app->booted(function () use ($resource) {
+            $this->setTranslationModel($resource);
+            $this->routes();
+        });
+    }
+
+    /**
+     * Register migrations for the package.
+     *
+     * @return void
+     */
+    protected function registerMigrations()
+    {
         if ($this->app->runningInConsole()) {
-            //Register Migrations
-            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+
+            $this->publishes([
+                __DIR__.'/../config/nova-translations.php' => config_path('nova-translations.php'),
+            ], 'nova-translations-config');
+
+            $this->publishes([
+                __DIR__.'/../database/migrations' => database_path('migrations'),
+            ], 'nova-translations-migrations');
         }
+    }
 
-        $this->publishes([
-            __DIR__ . '/../config/nova-translations.php' => config_path('nova-translations.php'),
-        ], 'nova-translations-config');
-
-        //Publish Migrations
-        $this->publishes([
-            __DIR__ . '/../database/migrations' => database_path('migrations'),
-        ], 'nova-translations-migrations');
-
-        $this->app->booted(function () use (&$resource) {
-            $config = $this->app['config'];
-            $config->set(
-                'translation-loader.model',
-                $config->get('nova-translations.model')
-            );
-
-            $resource::$model = $config->get('nova-translations.model');
-
+    /**
+     * Register console commands.
+     *
+     * @return void
+     */
+    protected function registerCommands()
+    {
+        if ($this->app->runningInConsole()) {
             $this->commands([
                 ImportScanCommand::class,
             ]);
+        }
+    }
 
-            $this->routes();
-        });
+    /**
+     * Register Nova-specific resources.
+     *
+     * @return void
+     */
+    protected function registerNovaResources()
+    {
+        $resource = $this->getConfiguredResource();
+        Nova::resources([$resource]);
+    }
 
-        Nova::serving(function (ServingNova $event) use (&$resource) {
-            Nova::resources([
-                $resource,
-            ]);
+    /**
+     * Load translations for Nova interface.
+     *
+     * @return void
+     */
+    protected function loadNovaTranslations()
+    {
+        Nova::$translations = Translation::getTranslationsForGroup(
+            $this->app->getLocale(),
+            '*'
+        );
+    }
 
-            Nova::$translations = Translation::getTranslationsForGroup(
-                $this->app->getLocale(),
-                '*'
-            );
-        });
+    /**
+     * Set the translation model for the resource.
+     *
+     * @param  string  $resource
+     * @return void
+     */
+    protected function setTranslationModel($resource)
+    {
+        $config = $this->app['config'];
+        $config->set('translation-loader.model', $config->get('nova-translations.model'));
+        $resource::$model = $config->get('nova-translations.model');
+    }
+
+    /**
+     * Get the configured Nova resource class.
+     *
+     * @return string
+     */
+    protected function getConfiguredResource()
+    {
+        return $this->app['config']->get('nova-translations.resource', TranslationResource::class);
     }
 
     /**
@@ -81,11 +151,11 @@ class NovaTranslationsServiceProvider extends ServiceProvider
         }
 
         Nova::router(['nova', Authenticate::class, Authorize::class], 'nova-translations')
-            ->group(__DIR__ . '/../routes/inertia.php');
+            ->group(__DIR__.'/../routes/inertia.php');
 
         Route::middleware(['nova', Authorize::class])
             ->prefix('nova-vendor/ferdiunal/nova-translations')
-            ->group(__DIR__ . '/../routes/api.php');
+            ->group(__DIR__.'/../routes/api.php');
     }
 
     /**
@@ -95,5 +165,6 @@ class NovaTranslationsServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        // Register any application services or bindings here
     }
 }
