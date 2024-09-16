@@ -1,10 +1,16 @@
+import { generateTailwindColors } from '../../vendor/laravel/nova/generators'
+// import NovaConfig from '../../vendor/laravel/nova/tailwind.config'
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    prefix: "nt-",
-    content: ["./resources/**/*{js,vue,blade.php}"],
-    darkMode: ["class"],
-    theme: {
-        extend: {},
-    },
-    plugins: [],
-};
+  content: ['./resources/**/*.{js,vue}'],
+  darkMode: ['class', '[class*="dark"]'],
+  prefix: 'nt-',
+  corePlugins: {
+    preflight: true,
+  },
+  theme: {
+    colors: generateTailwindColors(),
+    extend: {},
+  },
+  plugins: [],
+}

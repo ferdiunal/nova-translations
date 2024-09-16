@@ -45,44 +45,50 @@ class Scan
 
         /** @var SplFileInfo $file */
         foreach (File::allFiles(config('nova-translations.paths')) as $file) {
-            $dir = dirname($file);
-            if (Str::startsWith($dir, $excludedPaths)) {
-                continue;
-            }
-
-            if (
-                str($file->getPathname())->contains('/lang/') &&
-                (
-                    str($file->getPathname())->contains(sprintf('/%s/', config('app.locale'))) &&
-                    $file->getExtension() === 'php'
-                )
-                || str($file->getPathname())->contains(sprintf('%s.json', config('app.locale')))
-            ) {
-                if ($file->getExtension() === 'php') {
-                    $langs = [
-                        ...$langs,
-                        ...require $file->getPathname(),
-                    ];
-                } else {
-                    $langs = [
-                        ...$langs,
-                        ...((array) json_decode($file->getContents(), true)),
-                    ];
+            try {
+                $dir = dirname($file);
+                if (Str::startsWith($dir, $excludedPaths)) {
+                    continue;
                 }
 
+                if (
+                    str($file->getPathname())->contains('/lang/') &&
+                    (
+                        str($file->getPathname())->contains(sprintf('/%s/', config('app.locale'))) &&
+                        $file->getExtension() === 'php'
+                    )
+                    || str($file->getPathname())->contains(sprintf('%s.json', config('app.locale')))
+                ) {
+                    if ($file->getExtension() === 'php') {
+                        $langs = [
+                            ...$langs,
+                            ...require $file->getPathname(),
+                        ];
+                    } else {
+                        $langs = [
+                            ...$langs,
+                            ...((array) json_decode($file->getContents(), true)),
+                        ];
+                    }
+
+                    continue;
+                }
+
+                if (preg_match_all("/$patternA/siU", $file->getContents(), $matches)) {
+                    $trans->push($matches[2]);
+                }
+
+                if (preg_match_all("/$patternB/siU", $file->getContents(), $matches)) {
+                    $__->push($matches[2]);
+                }
+
+                if (preg_match_all("/$patternC/siU", $file->getContents(), $matches)) {
+                    $__->push($matches[2]);
+                }
+            } catch (\Exception $e) {
+                ray($e->getMessage());
+
                 continue;
-            }
-
-            if (preg_match_all("/$patternA/siU", $file->getContents(), $matches)) {
-                $trans->push($matches[2]);
-            }
-
-            if (preg_match_all("/$patternB/siU", $file->getContents(), $matches)) {
-                $__->push($matches[2]);
-            }
-
-            if (preg_match_all("/$patternC/siU", $file->getContents(), $matches)) {
-                $__->push($matches[2]);
             }
         }
 

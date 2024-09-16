@@ -74,6 +74,7 @@ final class SaveScan
             $text[$locale] = $this->lang($mainKey, [], $locale);
         }
 
+        ray(compact('namespace', 'group', 'key', 'text'));
         $model::query()->upsert(
             [
                 'namespace' => $namespace,
@@ -107,8 +108,8 @@ final class SaveScan
                 str($trans)->contains('.')));
 
         if ($this->defaultLocale !== $locale) {
-            if ($this->translater instanceof Translator && ! $isTranslatable) {
-                $trans = $this->translater->run(
+            if ($this->translator instanceof Translator && ! $isTranslatable) {
+                $trans = $this->translator->run(
                     source: $this->defaultLocale,
                     target: $locale,
                     text: $trans

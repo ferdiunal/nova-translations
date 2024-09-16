@@ -26,7 +26,7 @@ class ImportScanCommand extends Command
         );
 
         $this->signature = sprintf(
-            'nova-translation:import {--T|translater= : The translater to use: %s}',
+            'nova-translations:import {--T|translater= : The translater to use: %s}',
             implode(',', array_map(
                 fn (Translator $translater) => $translater->key(),
                 $this->translaters

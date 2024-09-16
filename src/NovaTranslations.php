@@ -4,7 +4,6 @@ namespace Ferdiunal\NovaTranslations;
 
 use Ferdiunal\NovaTranslations\Nova\TranslationResource;
 use Illuminate\Http\Request;
-use Laravel\Nova\Menu\MenuItem;
 use Laravel\Nova\Menu\MenuSection;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Tool;
@@ -29,17 +28,11 @@ class NovaTranslations extends Tool
      */
     public function menu(Request $request)
     {
-        return MenuSection::make(__('Translation Tool'), [
-            MenuItem::make(TranslationResource::label())
-                ->path('/resources/'.TranslationResource::uriKey())
-                ->activeWhen(function ($request, $url) {
-                    return ! $request->routeIs('nova.pages.lens') ? $url->active() : false;
-                })
-                ->canSee(function ($request) {
-                    return TranslationResource::authorizedToViewAny($request);
-                }),
-        ])
-            ->collapsable()
+        return MenuSection::make(__('Translation Tool'))
+            ->path('/resources/'.TranslationResource::uriKey())
+            ->canSee(function ($request) {
+                return TranslationResource::authorizedToViewAny($request);
+            })
             ->icon('translate');
     }
 }

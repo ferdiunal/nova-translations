@@ -25,18 +25,16 @@ class TranslationResource extends Resource
         'group',
         'key',
         'text',
-        'meta',
     ];
 
     public function fields(NovaRequest $request)
     {
         return [
             ID::make('ID', 'id')->sortable(),
-            Text::make('Namespace')->sortable(),
-            Text::make('Group')->sortable(),
+            Text::make('Namespace')->sortable()->placeholder('*'),
+            Text::make('Group')->sortable()->placeholder('*'),
             Text::make('Key')->sortable(),
             TranslationField::make('Text'),
-            Text::make('Meta')->sortable()->hideFromIndex(),
         ];
     }
 
