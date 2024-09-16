@@ -6,7 +6,7 @@ module.exports = {
   darkMode: ['class', '[class*="dark"]'],
   prefix: 'nt-',
   corePlugins: {
-    preflight: true,
+    preflight: false,
   },
   theme: {
     colors: generateTailwindColors(),
