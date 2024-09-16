@@ -1,6 +1,3 @@
-import app from "../app";
-import { CancelToken, isCancel } from "axios";
-
 export default {
     namespaced: true,
     state() {
